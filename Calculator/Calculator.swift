@@ -6,7 +6,6 @@
 //
 
 import Foundation
-
 enum Operation: String {
     case add = "+"
     case subtract = "-"
@@ -16,23 +15,11 @@ enum Operation: String {
 
 class Calculator {
     private let abstractOpreation = AbstractOperation()
-    private var previousNum: Double = 0
-    private var result: Double = 0
-    private var nextNum: Double? = nil
-    private var operations: [Operation] = []
-    private var num: [Double] = []
+    private var postfix: Postfix = Postfix()
+    private let operates: [Character] = ["+","-","/","*","(",")"]
+    private var result: Double = 0.0
     private var formula: [String] = []
-    private var formulaString: String {
-        formula.joined()
-    }
-    private let reg: String = "^[0-9+/*-]{1,}$"
-    private let reg2: String = "[+/*%-]{2,}"
-    private let operationPriority: [String: Int] = [ "+": 0, "-": 0, "*": 1, "/": 1 ]
-
-    private let numbers: [Character] = Array(0...9).compactMap { Character(String($0)) }
     private var exit: Bool = false
-    private var stack: [String] = []
-    
     func run() {
         while !exit {
             input()
@@ -42,98 +29,118 @@ class Calculator {
     private func input() {
         print("계산할 식을 입력해주세요(ex: 12+8*2, +12-12*2)")
         print("이전 노드 지우기:b 완전히 지우기:c 종료:x")
-        print("현재 상태: \(formulaString.isEmpty ? "0" : formulaString)")
+        let stringFormula = formula.joined()
+        print("현재 계산된 식: \(stringFormula.isEmpty ? "0" : stringFormula)")
+        print("현재 결과값: \(result)")
         if let input = readLine()  {
             read(input: input)
             return
         }
     }
     private func validation(input: String) -> Bool {
+        let reg: String = "^[0-9+/*()-]{1,}$"
+        let reg2: String = "[+/*%-]{2,}"
         let validation1 = input.range(of: reg, options: .regularExpression) != nil
         let validation2 = input.range(of: reg2, options: .regularExpression) == nil
-        print(validation1)
-        print(validation2)
         return validation1 && validation2
     }
     private func read(input: String) {
         let removeSpaceInput = input.components(separatedBy: .whitespaces).joined()
-        if input == "x" {
+        if removeSpaceInput == "x" || removeSpaceInput == "X" {
             exit = true
             return
-        } else if input == "c" {
+        } else if removeSpaceInput == "c" || removeSpaceInput == "C" {
             clear()
             return
-        } else if input == "b" {
+        } else if removeSpaceInput == "b" || removeSpaceInput == "B" {
             backspace()
             return
         }
-        var test: [String] = input.filter{ $0 != " " }.map{ String($0) }
-        let opreate: [Character] = ["+","-","/","*"]
+        guard validation(input: removeSpaceInput) else {
+            print("잘못된 입력입니다.")
+            return
+        }
+        let inputFormula = inputSplit(input: removeSpaceInput)
+        formulaAppend(newFormula: inputFormula)
+        calculate()
+    }
+    private func formulaAppend(newFormula: [String]) {
+        var newFormula = newFormula
+        if let newFirstNum = newFormula.first,
+           !operates.contains(newFirstNum) && !formula.isEmpty  {
+            guard let lastNum = formula.popLast() else { return }
+            newFormula.removeFirst()
+            formula.append(lastNum + newFirstNum)
+            formula.append(contentsOf: newFormula)
+        } else {
+            formula.append(contentsOf: newFormula)
+        }
+    }
+    private func calculate() {
+        var postfixFormula = postfix.getPostfix(formula: formula)
+        var stack: [Double] = []
+        while !postfixFormula.isEmpty {
+            let str = postfixFormula.removeFirst()
+            if operates.contains(str) {
+                let num2 = stack.removeLast()
+                let num1 = stack.removeLast()
+                guard let operate = Operation(rawValue: str) else {
+                    print("입력값이 잘못되었습니다.")
+                    return
+                }
+                stack.append(continueOperation(num1: num1, num2: num2, operation: operate))
+            } else {
+                guard let num = Double(str) else {
+                    print("double로 변환이 불가능합니다.")
+                    return
+                }
+                stack.append(num)
+            }
+        }
+        guard let result = stack.first else {
+            print("계산이 잘못되었습니다.")
+            return
+        }
+        self.result = result
+        print("결과: \(result)\n")
+    }
+    private func inputSplit(input: String) -> [String] {
+        var numJoinInput = [String]()
+        var inputArray = input.map{ String($0) }
+        if let str = inputArray.first,
+           operates.contains(str) && str != ")" && str != ")" && formula.isEmpty {
+            inputArray.insert("0", at: 0)
+        }
         var temp = [String]()
-        var results = [String]()
-        test.forEach { str in
-            if !opreate.contains(str) {
+        inputArray.forEach { str in
+            if !operates.contains(str) {
                 temp.append(str)
             } else {
-                results.append(temp.joined())
-                results.append(str)
+                if !temp.isEmpty { numJoinInput.append(temp.joined()) }
+                numJoinInput.append(str)
                 temp.removeAll()
             }
         }
-        results.append(temp.joined())
-        inputSplit(input: removeSpaceInput)
-    }
-    private func calculate() {  }
-    private func inputSplit(input: String) {
-        let inputNumbers = input.components(separatedBy: ["+","-","/","*"]).compactMap{ Double($0) }
-        let opreate: [Character] = ["+","-","/","*"]
-        let test = input.components(separatedBy: ["0","1","2","3","4","5","6","7","8","9"])
-        let inputOperations = input.filter{ opreate.contains($0) }.compactMap{
-            Operation(rawValue: String($0))
-        }
-        guard validation(input: input) else {
-            print("잘못 입력하였습니다.")
-            return
-        }
-        
-        print(num, operations)
-        num = inputNumbers
-        operations.append(contentsOf: inputOperations)
-        if num.count - 1 == operations.count {
-            result = num.removeFirst()
-        } else if num.count == operations.count {
-            if formula.isEmpty { formula.insert("0", at: 0) }
-        } else {
-            print("입력이 잘못되었습니다.")
-            return
-        }
-        operations.forEach { opreation in
-            continueOperation(num1: result, num2: num.removeFirst(), operation: opreation)
-        }
-        print(result)
-        
-        formula.append(contentsOf: input.map{ String($0) })
-        print(formula)
-        operations.removeAll()
+        numJoinInput.append(temp.joined())
+        return numJoinInput
     }
     private func clear() {
-        num.removeAll()
-        operations.removeAll()
         formula.removeAll()
         result = 0
     }
-    func backspace() {}
-    private func continueOperation(num1: Double, num2: Double, operation: Operation) {
-        previousNum = result
+    func backspace() {
+        formula.popLast()
+    }
+    private func continueOperation(num1: Double, num2: Double, operation: Operation) -> Double {
         switch operation {
         case .add:
-            result = abstractOpreation.addOperation(num1, num2)
+            return abstractOpreation.addOperation(num1, num2)
         case .subtract:
-           result = abstractOpreation.subtractOperation(num1, num2)
+            return abstractOpreation.subtractOperation(num1, num2)
         case .multiply:
-            result = abstractOpreation.MultiplyOperation(num1, num2)
+            return abstractOpreation.MultiplyOperation(num1, num2)
         case .divide:
-            result = abstractOpreation.DivideOperation(num1, num2)
+            return abstractOpreation.DivideOperation(num1, num2)
         }
     }
 }

@@ -3,14 +3,8 @@
    version = "3.0">
    <TimelineItems>
       <LoggerValueHistoryTimelineItem
-         documentLocation = "file:///Users/apple/Desktop/swift/Calculator/MyPlayground.playground#CharacterRangeLen=0&amp;CharacterRangeLoc=13&amp;EndingColumnNumber=0&amp;EndingLineNumber=1&amp;StartingColumnNumber=0&amp;StartingLineNumber=1&amp;Timestamp=711349163.515764"
+         documentLocation = "file:///Users/apple/Desktop/swift/Calculator/MyPlayground.playground#CharacterRangeLen=0&amp;CharacterRangeLoc=13&amp;EndingColumnNumber=0&amp;EndingLineNumber=1&amp;StartingColumnNumber=0&amp;StartingLineNumber=1&amp;Timestamp=711355745.531127"
          selectedRepresentationIndex = "0">
-      </LoggerValueHistoryTimelineItem>
-      <LoggerValueHistoryTimelineItem
-         documentLocation = "file:///Users/apple/Desktop/swift/Calculator/MyPlayground.playground#CharacterRangeLen=1&amp;CharacterRangeLoc=1705&amp;EndingColumnNumber=5&amp;EndingLineNumber=50&amp;StartingColumnNumber=4&amp;StartingLineNumber=50&amp;Timestamp=711349163.515885"
-         lockedSize = "{1134, 196}"
-         selectedRepresentationIndex = "0"
-         shouldTrackSuperviewWidth = "NO">
       </LoggerValueHistoryTimelineItem>
    </TimelineItems>
 </Timeline>
