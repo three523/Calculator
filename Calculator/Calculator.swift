@@ -38,8 +38,8 @@ class Calculator {
         }
     }
     private func validation(input: String) -> Bool {
-        let reg: String = "^[0-9+/*()-]{1,}$"
-        let reg2: String = "[+/*%-]{2,}"
+        let reg: String = "^[0-9+/*()-.]{1,}$"
+        let reg2: String = "[+/*%-.]{2,}"
         let validation1 = input.range(of: reg, options: .regularExpression) != nil
         let validation2 = input.range(of: reg2, options: .regularExpression) == nil
         return validation1 && validation2
