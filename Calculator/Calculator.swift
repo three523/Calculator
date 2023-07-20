@@ -6,7 +6,7 @@
 //
 
 import Foundation
-enum Operation: String {
+enum Operator: String {
     case add = "+"
     case subtract = "-"
     case multiply = "*"
@@ -16,10 +16,10 @@ enum Operation: String {
 class Calculator {
     private let abstractOpreation = AbstractOperation()
     private var postfix: Postfix = Postfix()
-    private let operates: [Character] = ["+","-","/","*","(",")"]
     private var result: Double = 0.0
     private var formula: [String] = []
     private var exit: Bool = false
+
     func run() {
         while !exit {
             input()
@@ -38,11 +38,13 @@ class Calculator {
         }
     }
     private func validation(input: String) -> Bool {
-        let reg: String = "^[0-9+/*()-.]{1,}$"
-        let reg2: String = "[+/*%-.]{2,}"
-        let validation1 = input.range(of: reg, options: .regularExpression) != nil
-        let validation2 = input.range(of: reg2, options: .regularExpression) == nil
-        return validation1 && validation2
+        let reg: String = "^[0-9+/*().-]{1,}$"
+        let reg2: String = "[+/*%.-]{2,}"
+        let reg3: String = "\\(\\)"
+        let validation1 = input.range(of: reg, options: .regularExpression) != nil // 0-9+/*().- 이 글자들로만 구성이 되어있는지 확인
+        let validation2 = input.range(of: reg2, options: .regularExpression) == nil // +/*%.- 이 연산자가 두번 연속으로 나오지 않는지 확인
+        let validation3 = input.range(of: reg3, options: .regularExpression) == nil // 빈 괄호() 가 나오지 않는지 확인
+        return validation1 && validation2 && validation3
     }
     private func read(input: String) {
         let removeSpaceInput = input.components(separatedBy: .whitespaces).joined()
@@ -61,34 +63,95 @@ class Calculator {
             return
         }
         let inputFormula = inputSplit(input: removeSpaceInput)
-        formulaAppend(newFormula: inputFormula)
-        calculate()
+        let newFormula = formulaAppend(newFormula: inputFormula)
+        calculate(formula: newFormula)
     }
-    private func formulaAppend(newFormula: [String]) {
+    private func formulaAppend(newFormula: [String]) -> [String] {
         var newFormula = newFormula
-        if let newFirstNum = newFormula.first,
-           !operates.contains(newFirstNum) && !formula.isEmpty  {
-            guard let lastNum = formula.popLast() else { return }
-            newFormula.removeFirst()
-            formula.append(lastNum + newFirstNum)
-            formula.append(contentsOf: newFormula)
-        } else {
-            formula.append(contentsOf: newFormula)
+        var oldFormula = formula
+        var result = [String]()
+        if !oldFormula.isEmpty {
+            result.append(oldFormula.popLast()!)
         }
+        
+        while !newFormula.isEmpty {
+            var temp = newFormula.removeFirst()
+            if result.isEmpty {
+                result.append(temp)
+            } else if let resultLastStr = result.last,
+                      resultLastStr == ")" && (temp.isNumber || temp == "(") {
+                result.append("*")
+                result.append(temp)
+            } else if let resultLastStr = result.last,
+                      resultLastStr.isNumber && temp == "(" {
+                result.append("*")
+                result.append(temp)
+            } else {
+                result.append(temp)
+            }
+        }
+        var tempFormula = oldFormula + result
+        if let newFirstFormula = newFormula.first,
+           let oldLastFormula = tempFormula.last,
+           newFirstFormula.isNumber && oldLastFormula.isNumber && !tempFormula.isEmpty {
+            guard let lastNum = tempFormula.popLast() else { return formula }
+            newFormula.removeFirst()
+            tempFormula.append(lastNum + newFirstFormula)
+        } else if let newFirstFormula = newFormula.first,
+                  let oldLastFormula = tempFormula.last,
+                  newFirstFormula.isBrackets && oldLastFormula.isNumber {
+            newFormula.insert("*", at: 0)
+        } else if let newFirstFormula = newFormula.first,
+                  let oldLastFormula = tempFormula.last,
+                  newFirstFormula.isNumber && oldLastFormula.isBrackets {
+            newFormula.insert("*", at: 0)
+        } else if let newFirstFormula = newFormula.first,
+                  let oldLastFormula = tempFormula.last,
+                  newFirstFormula.isBrackets && oldLastFormula.isBrackets {
+            newFormula.insert("*", at: 0)
+        }
+        tempFormula.append(contentsOf: newFormula)
+        guard validation(input: tempFormula.joined()) else {
+            print("입력값이 잘못되었습니다.")
+            return formula
+        }
+        return tempFormula
     }
-    private func calculate() {
+    private func test(newFormula: [String]) -> Bool {
+        guard let newFirstFormula = newFormula.first,
+              let oldLastFormula = formula.last else { return false }
+        let inputErrorCase1 = oldLastFormula.isNumber && newFirstFormula.isBrackets // ex: 2+2(2+2)
+        let inputErrorCase2 = oldLastFormula.isBrackets && newFirstFormula.isNumber // ex: (2+2)2+3
+        let inputErrorCase3 = oldLastFormula.isBrackets && newFirstFormula.isBrackets // ex: 2+2()
+        return inputErrorCase1 || inputErrorCase2 || inputErrorCase3
+    }
+    private func calculate(formula: [String]) {
+        if let lastText = formula.last,
+           lastText.isOperator {
+            self.result = 0
+            self.formula = formula
+            print("결과: \(result)\n")
+            return
+        }
         var postfixFormula = postfix.getPostfix(formula: formula)
         var stack: [Double] = []
         while !postfixFormula.isEmpty {
             let str = postfixFormula.removeFirst()
-            if operates.contains(str) {
-                let num2 = stack.removeLast()
-                let num1 = stack.removeLast()
-                guard let operate = Operation(rawValue: str) else {
+            if str.isOperator || str.isBrackets {
+                if stack.count >= 2 {
+                    let num2 = stack.removeLast()
+                    let num1 = stack.removeLast()
+                    guard let operate = Operator(rawValue: str) else {
+                        print("입력값이 잘못되었습니다.")
+                        return
+                    }
+                    stack.append(continueOperation(num1: num1, num2: num2, operation: operate))
+                } else if stack.count == 1 && postfixFormula.isEmpty {
+                    break
+                } else {
                     print("입력값이 잘못되었습니다.")
                     return
                 }
-                stack.append(continueOperation(num1: num1, num2: num2, operation: operate))
             } else {
                 guard let num = Double(str) else {
                     print("double로 변환이 불가능합니다.")
@@ -102,18 +165,19 @@ class Calculator {
             return
         }
         self.result = result
+        self.formula = formula
         print("결과: \(result)\n")
     }
     private func inputSplit(input: String) -> [String] {
         var numJoinInput = [String]()
         var inputArray = input.map{ String($0) }
         if let str = inputArray.first,
-           operates.contains(str) && str != ")" && str != ")" && formula.isEmpty {
+           str.isOperator && formula.isEmpty {
             inputArray.insert("0", at: 0)
         }
         var temp = [String]()
         inputArray.forEach { str in
-            if !operates.contains(str) {
+            if str.isNumber {
                 temp.append(str)
             } else {
                 if !temp.isEmpty { numJoinInput.append(temp.joined()) }
@@ -121,17 +185,18 @@ class Calculator {
                 temp.removeAll()
             }
         }
-        numJoinInput.append(temp.joined())
+        if !temp.isEmpty { numJoinInput.append(temp.joined()) }
         return numJoinInput
     }
     private func clear() {
         formula.removeAll()
         result = 0
     }
-    func backspace() {
+    private func backspace() {
         formula.popLast()
+        calculate(formula: formula)
     }
-    private func continueOperation(num1: Double, num2: Double, operation: Operation) -> Double {
+    private func continueOperation(num1: Double, num2: Double, operation: Operator) -> Double {
         switch operation {
         case .add:
             return abstractOpreation.addOperation(num1, num2)

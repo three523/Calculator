@@ -11,6 +11,7 @@
 		18C1870D2A64D737007737F3 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C1870C2A64D737007737F3 /* main.swift */; };
 		18C187142A64D75A007737F3 /* Calculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C187132A64D75A007737F3 /* Calculator.swift */; };
 		18C187162A64D87A007737F3 /* AbstractOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C187152A64D87A007737F3 /* AbstractOperation.swift */; };
+		18DE0A322A679A740046E792 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DE0A312A679A740046E792 /* Extension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -32,6 +33,7 @@
 		18C187132A64D75A007737F3 /* Calculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calculator.swift; sourceTree = "<group>"; };
 		18C187152A64D87A007737F3 /* AbstractOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbstractOperation.swift; sourceTree = "<group>"; };
 		18C187172A658AE0007737F3 /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		18DE0A312A679A740046E792 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +71,7 @@
 				18C187132A64D75A007737F3 /* Calculator.swift */,
 				18C187152A64D87A007737F3 /* AbstractOperation.swift */,
 				18AC58912A66654700994091 /* Postfix.swift */,
+				18DE0A312A679A740046E792 /* Extension.swift */,
 			);
 			path = Calculator;
 			sourceTree = "<group>";
@@ -131,6 +134,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				18DE0A322A679A740046E792 /* Extension.swift in Sources */,
 				18C1870D2A64D737007737F3 /* main.swift in Sources */,
 				18AC58922A66654700994091 /* Postfix.swift in Sources */,
 				18C187142A64D75A007737F3 /* Calculator.swift in Sources */,
