@@ -32,4 +32,3 @@
 <img width="470" alt="스크린샷 2023-07-20 오후 11 07 22" src="https://github.com/three523/Calculator/assets/71269216/c45c7424-a62d-43f4-a003-c1fd7406012d">
 
 ---
-
