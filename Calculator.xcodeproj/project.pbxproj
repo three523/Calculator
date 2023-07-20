@@ -32,7 +32,6 @@
 		18C1870C2A64D737007737F3 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		18C187132A64D75A007737F3 /* Calculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calculator.swift; sourceTree = "<group>"; };
 		18C187152A64D87A007737F3 /* AbstractOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbstractOperation.swift; sourceTree = "<group>"; };
-		18C187172A658AE0007737F3 /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		18DE0A312A679A740046E792 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -50,7 +49,6 @@
 		18C187002A64D737007737F3 = {
 			isa = PBXGroup;
 			children = (
-				18C187172A658AE0007737F3 /* MyPlayground.playground */,
 				18C1870B2A64D737007737F3 /* Calculator */,
 				18C1870A2A64D737007737F3 /* Products */,
 			);
