@@ -17,7 +17,7 @@
 
 
 - 소수점만 입력이 가능    
-<img width="475" alt="스크린샷 2023-07-20 오후 11 02 45" src="https://github.com/three523/Calculator/assets/71269216/c34f33ea-018e-4000-89d3-4162598d9514">
+<img width="472" alt="스크린샷 2023-07-21 오전 12 37 34" src="https://github.com/three523/Calculator/assets/71269216/bfabe763-155b-4912-ada0-4dedf8d5bd33">
 
 ---
 
