@@ -11,10 +11,19 @@ enum Operator: String {
     case subtract = "-"
     case multiply = "*"
     case divide = "/"
+    
+    func getOperator() -> AbstractOperation {
+        switch self {
+        case.add: return AddOperation()
+        case .subtract: return SubtractOperation()
+        case .multiply: return MultiplyOperation()
+        case .divide: return DivideOperation()
+        }
+    }
 }
 
 class Calculator {
-    private let abstractOpreation = AbstractOperation()
+    private var abstractOpreation = AbstractOperation()
     private var postfix: Postfix = Postfix()
     private var result: Double = 0.0
     private var formula: [String] = []
@@ -150,15 +159,14 @@ class Calculator {
                     let num2 = stack.removeLast()
                     let num1 = stack.removeLast()
                     guard let operate = Operator(rawValue: str) else {
-                        print("입력값이 잘못되었습니다.")
                         result = 0
                         return
                     }
-                    stack.append(continueOperation(num1: num1, num2: num2, operation: operate))
+                    abstractOpreation = operate.getOperator()
+                    stack.append(continueOperation(num1: num1, num2: num2))
                 } else if stack.count == 1 && postfixFormula.isEmpty {
                     break
                 } else {
-                    print("입력값이 잘못되었습니다.")
                     result = 0
                     return
                 }
@@ -187,16 +195,7 @@ class Calculator {
         formula.popLast()
         calculate(formula: formula)
     }
-    private func continueOperation(num1: Double, num2: Double, operation: Operator) -> Double {
-        switch operation {
-        case .add:
-            return abstractOpreation.addOperation(num1, num2)
-        case .subtract:
-            return abstractOpreation.subtractOperation(num1, num2)
-        case .multiply:
-            return abstractOpreation.MultiplyOperation(num1, num2)
-        case .divide:
-            return abstractOpreation.DivideOperation(num1, num2)
-        }
+    private func continueOperation(num1: Double, num2: Double) -> Double {
+        abstractOpreation.operation(firstNumber: num1, secondNumber: num2)
     }
 }

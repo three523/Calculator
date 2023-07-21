@@ -6,19 +6,31 @@
 //
 
 class AbstractOperation {
-    func addOperation(_ num1: Double, _ num2: Double) -> Double {
-        return num1 + num2
+    func operation(firstNumber: Double, secondNumber: Double) -> Double {
+        return 0.0
     }
-    
-    func subtractOperation(_ num1: Double, _ num2: Double) -> Double {
-        return num1 - num2
+}
+
+class AddOperation: AbstractOperation {
+    override func operation(firstNumber: Double, secondNumber: Double) -> Double {
+        return firstNumber + secondNumber
     }
-    
-    func MultiplyOperation(_ num1: Double, _ num2: Double) -> Double {
-        return num1 * num2
+}
+
+class SubtractOperation: AbstractOperation {
+    override func operation(firstNumber: Double, secondNumber: Double) -> Double {
+        return firstNumber - secondNumber
     }
-    
-    func DivideOperation(_ num1: Double, _ num2: Double) -> Double {
-        return num1 / num2
+}
+
+class MultiplyOperation: AbstractOperation {
+    override func operation(firstNumber: Double, secondNumber: Double) -> Double {
+        return firstNumber * secondNumber
+    }
+}
+
+class DivideOperation: AbstractOperation {
+    override func operation(firstNumber: Double, secondNumber: Double) -> Double {
+        return firstNumber / secondNumber
     }
 }
