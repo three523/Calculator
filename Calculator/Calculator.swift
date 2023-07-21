@@ -26,7 +26,7 @@ class Calculator {
     private var abstractOpreation = AbstractOperation()
     private var postfix: Postfix = Postfix()
 
-    func calculate(formula: [String]) -> Double? {
+    func profixCalculate(formula: [String]) -> Double? {
         if let lastText = formula.last,
            lastText.isOperator {
             return nil
@@ -41,7 +41,7 @@ class Calculator {
                     let num1 = stack.removeLast()
                     guard let operate = Operator(rawValue: str) else { return 0 }
                     abstractOpreation = operate.getOperator()
-                    stack.append(continueOperation(num1: num1, num2: num2))
+                    stack.append(calculate(num1: num1, num2: num2))
                 } else if stack.count == 1 && postfixFormula.isEmpty {
                     break
                 } else { return nil }
@@ -54,7 +54,7 @@ class Calculator {
 
         return result
     }
-    private func continueOperation(num1: Double, num2: Double) -> Double {
+    private func calculate(num1: Double, num2: Double) -> Double {
         abstractOpreation.operation(firstNumber: num1, secondNumber: num2)
     }
 }

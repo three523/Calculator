@@ -47,7 +47,7 @@ class Program {
             return
         }
         let newFormula = formulaAppend(appendFormula: removeSpaceInput.map{ String($0) })
-        result = calculator.calculate(formula: newFormula)
+        result = calculator.profixCalculate(formula: newFormula)
         if result != nil { formula = newFormula }
     }
     private func validation(input: String) -> Bool {
@@ -130,6 +130,6 @@ class Program {
     }
     private func backspace() {
         formula.popLast()
-        result = calculator.calculate(formula: formula)
+        result = calculator.profixCalculate(formula: formula)
     }
 }
