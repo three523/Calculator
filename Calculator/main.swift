@@ -7,4 +7,4 @@
 
 import Foundation
 
-Calculator().run()
+Program().run()

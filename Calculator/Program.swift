@@ -9,7 +9,7 @@ import Foundation
 class Program {
     private var calculator: Calculator = Calculator()
     private var formula: [String] = []
-    private var result: Double = 0
+    private var result: Double? = nil
     private var exit: Bool = false
     func run() {
         print("*** 주의사항: 입력할떄 괄호()를 꼭 직접 입력하여 닫아주셔야 합니다. 자동완성으로 괄호가 닫히는 경우 입력이 제대로 되지 않습니다.***")
@@ -24,7 +24,7 @@ class Program {
         print("한글자 지우기:b 모두 지우기:c 종료:x")
         let stringFormula = formula.joined()
         print("현재 계산된 식: \(stringFormula.isEmpty ? "0" : stringFormula)")
-        print("현재 결과값: \(result)")
+        print("현재 결과값: \(result ?? 0)")
         if let input = readLine()  {
             read(input: input)
             return
@@ -44,11 +44,11 @@ class Program {
         }
         guard validation(input: removeSpaceInput) else {
             print("잘못된 입력입니다.")
-            result = 0
             return
         }
         let newFormula = formulaAppend(appendFormula: removeSpaceInput.map{ String($0) })
-        calculator.calculate(formula: newFormula)
+        result = calculator.calculate(formula: newFormula)
+        if result != nil { formula = newFormula }
     }
     private func validation(input: String) -> Bool {
         var input = input
@@ -70,11 +70,11 @@ class Program {
         do {
             let regex1 = try NSRegularExpression(pattern: reg5)
             let regex2 = try NSRegularExpression(pattern: reg6)
-            let results1 = regex1.matches(in: input,
+            let matchResults1 = regex1.matches(in: input,
                                           range: NSRange(input.startIndex..., in: input)).count
-            let results2 = regex2.matches(in: input,
+            let matchResults2 = regex2.matches(in: input,
                                           range: NSRange(input.startIndex..., in: input)).count
-            return validation1 && validation2 && validation3 && validation4  && results1 == results2
+            return validation1 && validation2 && validation3 && validation4  && matchResults1 == matchResults2
         } catch let error {
             print("invalid regex: \(error.localizedDescription)")
         }
@@ -87,42 +87,42 @@ class Program {
            str.isOperator && oldFormula.isEmpty {
             appendFormula.insert("0", at: 0)
         }
-        var result = [String]()
+        var tempFormula = [String]()
         if !oldFormula.isEmpty {
-            result.append(oldFormula.popLast()!)
+            tempFormula.append(oldFormula.popLast()!)
         }
         while !appendFormula.isEmpty {
             let temp = appendFormula.removeFirst()
-            if result.isEmpty {
-                result.append(temp)
-            } else if let resultLastStr = result.last,
+            if tempFormula.isEmpty {
+                tempFormula.append(temp)
+            } else if let resultLastStr = tempFormula.last,
                       resultLastStr == ")" && (temp.isNumber || temp == "(") {
-                result.append("*")
-                result.append(temp)
-            } else if let resultLastStr = result.last,
+                tempFormula.append("*")
+                tempFormula.append(temp)
+            } else if let resultLastStr = tempFormula.last,
                       resultLastStr.isNumber && temp == "(" {
-                result.append("*")
-                result.append(temp)
-            } else if let lastStr = result.last,
+                tempFormula.append("*")
+                tempFormula.append(temp)
+            } else if let lastStr = tempFormula.last,
                       lastStr.isNumber && temp.isNumber {
-                result.removeLast()
-                result.append(lastStr + temp)
-            } else if let lastStr = result.last,
+                tempFormula.removeLast()
+                tempFormula.append(lastStr + temp)
+            } else if let lastStr = tempFormula.last,
                       let lastChar = lastStr.last,
                       lastChar == "." && temp.isNumber {
-                result.removeLast()
-                result.append(lastStr + temp)
-            } else if let lastStr = result.last,
+                tempFormula.removeLast()
+                tempFormula.append(lastStr + temp)
+            } else if let lastStr = tempFormula.last,
                       lastStr.isNumber && temp == "." {
-                result.removeLast()
-                result.append(lastStr + temp)
+                tempFormula.removeLast()
+                tempFormula.append(lastStr + temp)
             } else {
-                result.append(temp)
+                tempFormula.append(temp)
             }
         }
-        var tempFormula = oldFormula + result
-        tempFormula.append(contentsOf: appendFormula)
-        return tempFormula
+        var newFormula = oldFormula + tempFormula
+        newFormula.append(contentsOf: appendFormula)
+        return newFormula
     }
     private func clear() {
         formula.removeAll()
@@ -130,6 +130,6 @@ class Program {
     }
     private func backspace() {
         formula.popLast()
-        calculator.calculate(formula: formula)
+        result = calculator.calculate(formula: formula)
     }
 }

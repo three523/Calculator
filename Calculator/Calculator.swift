@@ -26,10 +26,10 @@ class Calculator {
     private var abstractOpreation = AbstractOperation()
     private var postfix: Postfix = Postfix()
 
-    func calculate(formula: [String]) -> Double {
+    func calculate(formula: [String]) -> Double? {
         if let lastText = formula.last,
            lastText.isOperator {
-            return 0
+            return nil
         }
         var postfixFormula = postfix.getPostfix(formula: formula)
         var stack: [Double] = []
@@ -44,13 +44,13 @@ class Calculator {
                     stack.append(continueOperation(num1: num1, num2: num2))
                 } else if stack.count == 1 && postfixFormula.isEmpty {
                     break
-                } else { return 0 }
+                } else { return nil }
             } else {
-                guard let num = Double(str) else { return 0 }
+                guard let num = Double(str) else { return nil }
                 stack.append(num)
             }
         }
-        guard let result = stack.first else { return 0 }
+        guard let result = stack.first else { return nil }
 
         return result
     }
